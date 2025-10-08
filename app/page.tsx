@@ -166,7 +166,37 @@ export default function Page() {
               </p>
               <hr style={{ border: 'none', borderBottom: '1px solid #eee' }} />
             </div>
-
+            {/* Select All Button */}
+            {filteredFiles.length > 0 && (
+              <div style={{ marginBottom: 20, textAlign: 'right' }}>
+                <button
+                  onClick={selectAllVisible}
+                  style={{
+                    background: '#111',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={e =>
+                    (e.currentTarget.style.background = '#333')
+                  }
+                  onMouseLeave={e =>
+                    (e.currentTarget.style.background = '#111')
+                  }
+                >
+                  {
+                    filteredFiles.every(f => selected[f.path])
+                      ? 'Deselect All'
+                      : 'Select All'
+                  }
+                </button>
+              </div>
+            )}
             {filteredFiles.length === 0 ? (
               <div style={{ color: '#666', fontSize: 15, textAlign: 'center' }}>
                 No files found in <strong>{activeCategory}</strong>.
