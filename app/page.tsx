@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
-type FileEntry = { name: string; path: string; size: number };
+type FileEntry = { name: string; path: string; size: number; lastModified?: string };
 type Manifest = { generatedAt: string; categories: Record<string, FileEntry[]> };
 
 export default function Page() {
@@ -16,7 +16,9 @@ export default function Page() {
     fetch('/manifest.json', { cache: 'no-store' })
       .then(r => r.json())
       .then(setManifest)
-      .catch(() => setManifest({ generatedAt: '', categories: {} } as Manifest));
+      .catch(() =>
+        setManifest({ generatedAt: '', categories: {} } as Manifest)
+      );
   }, []);
 
   const filteredFiles = useMemo(() => {
@@ -72,6 +74,10 @@ export default function Page() {
 
   const categories = Object.keys(manifest.categories);
   const selectedCount = Object.values(selected).filter(Boolean).length;
+
+  // Support mail link (subject only)
+  const supportMailLink =
+    'mailto:datafeed.support.snl@spglobal.com?subject=Data%20Dictionary%20Assistance%20Request';
 
   return (
     <main
@@ -148,7 +154,14 @@ export default function Page() {
         }}
       >
         {!activeCategory && (
-          <div style={{ color: '#666', fontSize: 15, textAlign: 'center', marginTop: '20%' }}>
+          <div
+            style={{
+              color: '#666',
+              fontSize: 15,
+              textAlign: 'center',
+              marginTop: '20%',
+            }}
+          >
             Select a category from the left to browse files.
           </div>
         )}
@@ -166,6 +179,7 @@ export default function Page() {
               </p>
               <hr style={{ border: 'none', borderBottom: '1px solid #eee' }} />
             </div>
+
             {/* Select All Button */}
             {filteredFiles.length > 0 && (
               <div style={{ marginBottom: 20, textAlign: 'right' }}>
@@ -189,14 +203,14 @@ export default function Page() {
                     (e.currentTarget.style.background = '#111')
                   }
                 >
-                  {
-                    filteredFiles.every(f => selected[f.path])
-                      ? 'Deselect All'
-                      : 'Select All'
-                  }
+                  {filteredFiles.every(f => selected[f.path])
+                    ? 'Deselect All'
+                    : 'Select All'}
                 </button>
               </div>
             )}
+
+            {/* File Cards */}
             {filteredFiles.length === 0 ? (
               <div style={{ color: '#666', fontSize: 15, textAlign: 'center' }}>
                 No files found in <strong>{activeCategory}</strong>.
@@ -267,15 +281,13 @@ export default function Page() {
                           ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
                           : (f.size / 1024).toFixed(1) + ' KB'}
                       </span>
-                    
                       {f.lastModified && (
                         <span style={{ color: '#999', fontSize: 12 }}>
                           Updated{' '}
-                          {new Date(f.lastModified).toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
+                          {new Date(f.lastModified).toLocaleDateString(
+                            undefined,
+                            { year: 'numeric', month: 'short', day: 'numeric' }
+                          )}
                         </span>
                       )}
                     </div>
@@ -329,66 +341,43 @@ export default function Page() {
           </>
         )}
 
-        {/* Sticky footer bar for multi-download */}
-        {selectedCount > 0 && (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: 20,
-              left: 280,
-              right: 20,
-              background: '#fff',
-              border: '1px solid #ddd',
-              borderRadius: 12,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-              padding: '14px 22px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'opacity 0.3s',
-            }}
-          >
-            <div style={{ color: '#333', fontSize: 15 }}>
-              {selectedCount} file{selectedCount > 1 ? 's' : ''} selected
-            </div>
-            <button
-              onClick={downloadSelected}
-              disabled={busy}
-              style={{
-                background: busy ? '#ccc' : '#b50e0e',
-                color: '#fff',
-                padding: '10px 20px',
-                borderRadius: 8,
-                border: 'none',
-                cursor: busy ? 'not-allowed' : 'pointer',
-                fontWeight: 600,
-                fontSize: 14,
-              }}
-            >
-              {busy ? 'Preparing…' : 'Download Selected'}
-            </button>
-          </div>
-        )}
+        {/* Floating Need Help button with label */}
+        <a
+          href={supportMailLink}
+          style={{
+            position: 'fixed',
+            bottom: 30,
+            right: 30,
+            background: '#b50e0e',
+            color: '#fff',
+            borderRadius: 30,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 20px',
+            textDecoration: 'none',
+            fontWeight: 600,
+            fontSize: 15,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            transition:
+              'width 0.3s ease, background 0.2s ease, box-shadow 0.2s ease',
+            whiteSpace: 'nowrap',
+            zIndex: 999,
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#9a0c0c';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = '#b50e0e';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          }}
+          title="Contact Datafeed Support"
+        >
+          📩 Need Help?
+        </a>
       </section>
     </main>
   );
 }
-
-// Inject fade + dark mode styles after page mounts
-useEffect(() => {
-  const style = document.createElement('style');
-  style.innerHTML = `
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @media (prefers-color-scheme: dark) {
-    body { background: #111; color: #eee; }
-    aside { background: #1c1c1c; border-color: #333; }
-    section { background: #111; }
-    div, p, h1, h2 { color: #eee !important; }
-  }
-  `;
-  document.head.appendChild(style);
-}, []);
-
