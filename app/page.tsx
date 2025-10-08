@@ -11,6 +11,18 @@ export default function Page() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Load theme preference
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark') setTheme('dark');
+  }, []);
+
+  // Save theme preference
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     fetch('/manifest.json', { cache: 'no-store' })
@@ -59,23 +71,8 @@ export default function Page() {
     }
   }
 
-  if (!manifest)
-    return (
-      <main
-        style={{
-          padding: 60,
-          fontFamily: 'Inter, system-ui, Arial',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: 18, color: '#666' }}>Loading data…</div>
-      </main>
-    );
-
-  const categories = Object.keys(manifest.categories);
+  const categories = manifest ? Object.keys(manifest.categories) : [];
   const selectedCount = Object.values(selected).filter(Boolean).length;
-
-  // Support mail link (subject only)
   const supportMailLink =
     'mailto:datafeed.support.snl@spglobal.com?subject=Data%20Dictionary%20Assistance%20Request';
 
@@ -85,18 +82,24 @@ export default function Page() {
         display: 'flex',
         height: '100vh',
         fontFamily: 'Inter, system-ui, Arial',
-        background: '#f9f9f9',
+        transition: 'background 1.5s ease',
+        background:
+          theme === 'light'
+            ? 'linear-gradient(180deg, #fceabb, #f8b500)'
+            : 'linear-gradient(180deg, #1e3c72, #2a5298)',
+        color: theme === 'light' ? '#111' : '#eee',
       }}
     >
       {/* Sidebar */}
       <aside
         style={{
           width: 260,
-          background: '#fff',
-          borderRight: '1px solid #eee',
+          background: theme === 'light' ? '#fff' : '#1a1a1a',
+          borderRight: `1px solid ${theme === 'light' ? '#eee' : '#333'}`,
           padding: '24px',
           boxShadow: '2px 0 8px rgba(0,0,0,0.05)',
           overflowY: 'auto',
+          transition: 'background 1s ease, color 1s ease',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -109,9 +112,11 @@ export default function Page() {
               objectFit: 'contain',
               margin: '0 auto',
               display: 'block',
+              filter: theme === 'light' ? 'none' : 'invert(1)',
+              transition: 'filter 1s ease',
             }}
           />
-        </div>  
+        </div>
         <h2
           style={{
             fontSize: 18,
@@ -134,20 +139,16 @@ export default function Page() {
                 marginBottom: 6,
                 cursor: 'pointer',
                 background:
-                  activeCategory === cat ? '#b50e0e' : 'transparent',
-                color: activeCategory === cat ? '#fff' : '#111',
-                transition: 'all 0.2s ease',
+                  activeCategory === cat
+                    ? '#b50e0e'
+                    : theme === 'light'
+                    ? 'transparent'
+                    : '#222',
+                color: activeCategory === cat ? '#fff' : theme === 'light' ? '#111' : '#ccc',
+                transition: 'all 0.4s ease',
                 fontWeight: 500,
                 outline: 'none',
               }}
-              onMouseEnter={e =>
-                (e.currentTarget.style.background =
-                  activeCategory === cat ? '#a10d0d' : '#f3f3f3')
-              }
-              onMouseLeave={e =>
-                (e.currentTarget.style.background =
-                  activeCategory === cat ? '#b50e0e' : 'transparent')
-              }
             >
               {cat}
             </div>
@@ -164,12 +165,33 @@ export default function Page() {
           padding: 32,
           overflowY: 'auto',
           position: 'relative',
+          transition: 'color 0.8s ease',
         }}
       >
+        {/* Theme toggle */}
+        <button
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          title="Toggle Light/Dark Mode"
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 28,
+            transition: 'transform 0.5s ease, filter 1s ease',
+            transform: theme === 'light' ? 'rotate(0deg)' : 'rotate(180deg)',
+            filter: theme === 'light' ? 'none' : 'drop-shadow(0 0 8px #f0e68c)',
+          }}
+        >
+          {theme === 'light' ? '🌞' : '🌙'}
+        </button>
+
         {!activeCategory && (
           <div
             style={{
-              color: '#666',
+              color: theme === 'light' ? '#444' : '#ccc',
               fontSize: 15,
               textAlign: 'center',
               marginTop: '20%',
@@ -186,35 +208,33 @@ export default function Page() {
               <h1 style={{ fontSize: 24, color: '#b50e0e', margin: 0 }}>
                 {activeCategory}
               </h1>
-              <p style={{ fontSize: 14, color: '#666', margin: '4px 0 12px' }}>
+              <p style={{ fontSize: 14, color: theme === 'light' ? '#666' : '#bbb', margin: '4px 0 12px' }}>
                 {filteredFiles.length} files available · Last updated:{' '}
-                {new Date(manifest.generatedAt).toLocaleDateString()}
+                {new Date(manifest?.generatedAt || '').toLocaleDateString()}
               </p>
-              <hr style={{ border: 'none', borderBottom: '1px solid #eee' }} />
+              <hr
+                style={{
+                  border: 'none',
+                  borderBottom: `1px solid ${theme === 'light' ? '#eee' : '#444'}`,
+                }}
+              />
             </div>
 
-            {/* Select All Button */}
             {filteredFiles.length > 0 && (
               <div style={{ marginBottom: 20, textAlign: 'right' }}>
                 <button
                   onClick={selectAllVisible}
                   style={{
-                    background: '#111',
-                    color: '#fff',
+                    background: theme === 'light' ? '#111' : '#eee',
+                    color: theme === 'light' ? '#fff' : '#111',
                     border: 'none',
                     borderRadius: 8,
                     padding: '10px 16px',
                     fontSize: 13,
                     fontWeight: 500,
                     cursor: 'pointer',
-                    transition: 'background 0.2s',
+                    transition: 'all 0.3s',
                   }}
-                  onMouseEnter={e =>
-                    (e.currentTarget.style.background = '#333')
-                  }
-                  onMouseLeave={e =>
-                    (e.currentTarget.style.background = '#111')
-                  }
                 >
                   {filteredFiles.every(f => selected[f.path])
                     ? 'Deselect All'
@@ -225,7 +245,7 @@ export default function Page() {
 
             {/* File Cards */}
             {filteredFiles.length === 0 ? (
-              <div style={{ color: '#666', fontSize: 15, textAlign: 'center' }}>
+              <div style={{ color: '#888', fontSize: 15, textAlign: 'center' }}>
                 No files found in <strong>{activeCategory}</strong>.
               </div>
             ) : (
@@ -241,17 +261,19 @@ export default function Page() {
                   <div
                     key={f.path}
                     style={{
-                      background: '#fff',
+                      background: theme === 'light' ? '#fff' : '#2a2a2a',
                       borderRadius: 16,
-                      boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+                      boxShadow:
+                        theme === 'light'
+                          ? '0 2px 10px rgba(0,0,0,0.08)'
+                          : '0 2px 10px rgba(255,255,255,0.05)',
                       padding: '24px 20px',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
                       textAlign: 'center',
                       animation: `fadeIn 0.4s ease ${idx * 0.05}s both`,
-                      transition: 'transform 0.2s ease, box-shadow 0.3s ease',
+                      transition: 'transform 0.3s, background 1s, box-shadow 1s',
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.transform = 'translateY(-5px)';
@@ -261,7 +283,9 @@ export default function Page() {
                     onMouseLeave={e => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow =
-                        '0 2px 10px rgba(0,0,0,0.08)';
+                        theme === 'light'
+                          ? '0 2px 10px rgba(0,0,0,0.08)'
+                          : '0 2px 10px rgba(255,255,255,0.05)';
                     }}
                   >
                     <span style={{ fontSize: 40, color: '#1d6f42' }}>📘</span>
@@ -270,7 +294,7 @@ export default function Page() {
                         marginTop: 10,
                         fontWeight: 600,
                         fontSize: 16,
-                        color: '#222',
+                        color: theme === 'light' ? '#222' : '#f4f4f4',
                         wordBreak: 'break-word',
                         maxWidth: '90%',
                       }}
@@ -280,38 +304,16 @@ export default function Page() {
                     <div
                       style={{
                         fontSize: 13,
-                        color: '#777',
+                        color: theme === 'light' ? '#777' : '#ccc',
                         marginTop: 4,
                         marginBottom: 16,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 3,
                       }}
                     >
-                      <span>
-                        {f.size >= 1024 * 1024
-                          ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
-                          : (f.size / 1024).toFixed(1) + ' KB'}
-                      </span>
-                      {f.lastModified && (
-                        <span style={{ color: '#999', fontSize: 12 }}>
-                          Updated{' '}
-                          {new Date(f.lastModified).toLocaleDateString(
-                            undefined,
-                            { year: 'numeric', month: 'short', day: 'numeric' }
-                          )}
-                        </span>
-                      )}
+                      {f.size >= 1024 * 1024
+                        ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                        : (f.size / 1024).toFixed(1) + ' KB'}
                     </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 12,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
                       <input
                         type="checkbox"
                         checked={!!selected[f.path]}
@@ -329,20 +331,8 @@ export default function Page() {
                           borderRadius: 10,
                           fontSize: 14,
                           fontWeight: 500,
-                          transition: 'background 0.2s, transform 0.1s',
+                          transition: 'background 0.3s',
                         }}
-                        onMouseEnter={e =>
-                          (e.currentTarget.style.background = '#9a0c0c')
-                        }
-                        onMouseLeave={e =>
-                          (e.currentTarget.style.background = '#b50e0e')
-                        }
-                        onMouseDown={e =>
-                          (e.currentTarget.style.transform = 'scale(0.97)')
-                        }
-                        onMouseUp={e =>
-                          (e.currentTarget.style.transform = 'scale(1)')
-                        }
                       >
                         Download
                       </a>
@@ -354,7 +344,7 @@ export default function Page() {
           </>
         )}
 
-        {/* Floating Need Help button with label */}
+        {/* Need Help button */}
         <a
           href={supportMailLink}
           style={{
@@ -373,20 +363,7 @@ export default function Page() {
             fontWeight: 600,
             fontSize: 15,
             boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            transition:
-              'width 0.3s ease, background 0.2s ease, box-shadow 0.2s ease',
-            whiteSpace: 'nowrap',
-            zIndex: 999,
           }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#9a0c0c';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#b50e0e';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          }}
-          title="Contact Datafeed Support"
         >
           📩 Need Help?
         </a>
