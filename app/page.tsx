@@ -327,18 +327,21 @@ export default function Page() {
   );
 }
 
-/* Fade-in animation */
-const style = document.createElement('style');
-style.innerHTML = `
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-color-scheme: dark) {
-  body { background: #111; color: #eee; }
-  aside { background: #1c1c1c; border-color: #333; }
-  section { background: #111; }
-  div, p, h1, h2 { color: #eee !important; }
-}
-`;
-document.head.appendChild(style);
+// Inject fade + dark mode styles after page mounts
+useEffect(() => {
+  const style = document.createElement('style');
+  style.innerHTML = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #111; color: #eee; }
+    aside { background: #1c1c1c; border-color: #333; }
+    section { background: #111; }
+    div, p, h1, h2 { color: #eee !important; }
+  }
+  `;
+  document.head.appendChild(style);
+}, []);
+
