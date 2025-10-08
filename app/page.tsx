@@ -99,6 +99,20 @@ export default function Page() {
           overflowY: 'auto',
         }}
       >
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <img
+          src="/spglobal_logo.svg"
+          alt="S&P Global Logo"
+          style={{
+            width: '140px',
+            height: 'auto',
+            objectFit: 'contain',
+            margin: '0 auto',
+            display: 'block',
+          }}
+        />
+      </div>
+  
         <h2
           style={{
             fontSize: 18,
