@@ -101,7 +101,7 @@ export default function Page() {
       >
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <img
-          src="/spglobal_logo.svg"
+          src="/spglobal_logo.svg.png"
           alt="S&P Global Logo"
           style={{
             width: '140px',
