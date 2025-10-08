@@ -151,6 +151,7 @@ export default function Page() {
           overflowY: 'auto',
         }}
       >
+        {/* Header actions */}
         <header
           style={{
             position: 'sticky',
@@ -230,6 +231,7 @@ export default function Page() {
             </div>
           )}
 
+          {/* FILE CARDS */}
           {activeCategory && filteredFiles.length > 0 && (
             <>
               <div
@@ -240,58 +242,50 @@ export default function Page() {
                   textAlign: 'right',
                 }}
               >
-                {filteredFiles.length} files
+                {filteredFiles.length} file
+                {filteredFiles.length > 1 ? 's' : ''}
               </div>
 
               <div
                 style={{
                   display: 'grid',
                   gap: 16,
-                  gridTemplateColumns:
-                    'repeat(auto-fill, minmax(280px, 1fr))',
-                  animation: 'fadeIn 0.3s ease',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                 }}
               >
                 {filteredFiles.map(f => (
                   <div
                     key={f.path}
                     style={{
-                      border: '1px solid #eaeaea',
-                      borderRadius: 12,
-                      padding: '14px 16px',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 10,
+                      padding: '16px 20px',
                       background: '#fff',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      transition: 'all 0.2s ease',
+                      transition: 'transform 0.1s, box-shadow 0.2s',
                     }}
-                    onMouseEnter={e =>
-                      (e.currentTarget.style.boxShadow =
-                        '0 2px 8px rgba(0,0,0,0.08)')
-                    }
-                    onMouseLeave={e =>
-                      (e.currentTarget.style.boxShadow =
-                        '0 1px 3px rgba(0,0,0,0.05)')
-                    }
+                    onMouseEnter={e => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(0,0,0,0.08)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow =
+                        '0 1px 4px rgba(0,0,0,0.05)';
+                    }}
+                    title={f.name}
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        flex: 1,
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={!!selected[f.path]}
-                        onChange={() => toggleSelect(f.path)}
-                      />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                      <span style={{ fontSize: 20, color: '#0077c2' }}>📄</span>
                       <div style={{ overflow: 'hidden' }}>
                         <div
                           style={{
                             fontWeight: 600,
+                            fontSize: 15,
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
@@ -303,28 +297,45 @@ export default function Page() {
                           style={{
                             fontSize: 12,
                             color: '#777',
-                            marginTop: 2,
+                            marginTop: 4,
                           }}
                         >
-                          {(f.size / 1024).toFixed(1)} KB
+                          {f.size >= 1024 * 1024
+                            ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                            : (f.size / 1024).toFixed(1) + ' KB'}
                         </div>
                       </div>
                     </div>
-                    <a
-                      href={encodeURI(f.path)}
-                      download
-                      style={{
-                        background: '#111',
-                        color: '#fff',
-                        textDecoration: 'none',
-                        padding: '6px 12px',
-                        borderRadius: 8,
-                        fontSize: 13,
-                        fontWeight: 500,
-                      }}
-                    >
-                      Download
-                    </a>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={!!selected[f.path]}
+                        onChange={() => toggleSelect(f.path)}
+                      />
+                      <a
+                        href={encodeURI(f.path)}
+                        download
+                        style={{
+                          textDecoration: 'none',
+                          background: '#b50e0e',
+                          color: '#fff',
+                          padding: '8px 14px',
+                          borderRadius: 8,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          whiteSpace: 'nowrap',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={e =>
+                          (e.currentTarget.style.background = '#9a0c0c')
+                        }
+                        onMouseLeave={e =>
+                          (e.currentTarget.style.background = '#b50e0e')
+                        }
+                      >
+                        Download
+                      </a>
+                    </div>
                   </div>
                 ))}
               </div>
