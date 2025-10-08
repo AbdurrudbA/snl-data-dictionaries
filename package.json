@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "node scripts/generate-manifest.mjs",
     "build": "next build",
-    "vercel-build": "npm install typescript @types/react @types/node --save-dev && npm run build",
+    "vercel-build": "npm install typescript @types/react @types/node --force --legacy-peer-deps && npm run build",
     "start": "next start",
     "dev": "next dev -p 3000"
   },
@@ -22,6 +22,7 @@
   }
 
 }
+
 
 
 
