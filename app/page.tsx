@@ -84,7 +84,7 @@ export default function Page() {
         display: 'flex',
         height: '100vh',
         fontFamily: 'Inter, system-ui, Arial',
-        background: '#fafafa',
+        background: '#f9f9f9',
       }}
     >
       {/* Sidebar */}
@@ -151,13 +151,13 @@ export default function Page() {
           overflowY: 'auto',
         }}
       >
-        {/* Header actions */}
+        {/* Header */}
         <header
           style={{
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            background: '#fafafa',
+            background: '#f9f9f9',
             paddingBottom: 12,
             borderBottom: '1px solid #eee',
             display: 'flex',
@@ -231,115 +231,113 @@ export default function Page() {
             </div>
           )}
 
-          {/* FILE CARDS */}
+          {/* Card layout */}
           {activeCategory && filteredFiles.length > 0 && (
-            <>
-              <div
-                style={{
-                  fontSize: 13,
-                  color: '#555',
-                  marginBottom: 10,
-                  textAlign: 'right',
-                }}
-              >
-                {filteredFiles.length} file
-                {filteredFiles.length > 1 ? 's' : ''}
-              </div>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gap: 16,
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                }}
-              >
-                {filteredFiles.map(f => (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
+                gap: 24,
+                padding: '10px 0',
+              }}
+            >
+              {filteredFiles.map(f => (
+                <div
+                  key={f.path}
+                  style={{
+                    background: '#fff',
+                    borderRadius: 16,
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+                    padding: '24px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    textAlign: 'center',
+                    transition: 'transform 0.2s ease, box-shadow 0.3s ease',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow =
+                      '0 6px 18px rgba(0,0,0,0.12)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow =
+                      '0 2px 10px rgba(0,0,0,0.08)';
+                  }}
+                >
+                  <span style={{ fontSize: 38, color: '#0077c2' }}>📄</span>
                   <div
-                    key={f.path}
                     style={{
-                      border: '1px solid #e0e0e0',
-                      borderRadius: 10,
-                      padding: '16px 20px',
-                      background: '#fff',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      transition: 'transform 0.1s, box-shadow 0.2s',
+                      marginTop: 10,
+                      fontWeight: 600,
+                      fontSize: 16,
+                      color: '#222',
+                      wordWrap: 'break-word',
+                      maxWidth: '90%',
                     }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow =
-                        '0 4px 12px rgba(0,0,0,0.08)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow =
-                        '0 1px 4px rgba(0,0,0,0.05)';
-                    }}
-                    title={f.name}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-                      <span style={{ fontSize: 20, color: '#0077c2' }}>📄</span>
-                      <div style={{ overflow: 'hidden' }}>
-                        <div
-                          style={{
-                            fontWeight: 600,
-                            fontSize: 15,
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {f.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color: '#777',
-                            marginTop: 4,
-                          }}
-                        >
-                          {f.size >= 1024 * 1024
-                            ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
-                            : (f.size / 1024).toFixed(1) + ' KB'}
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                      <input
-                        type="checkbox"
-                        checked={!!selected[f.path]}
-                        onChange={() => toggleSelect(f.path)}
-                      />
-                      <a
-                        href={encodeURI(f.path)}
-                        download
-                        style={{
-                          textDecoration: 'none',
-                          background: '#b50e0e',
-                          color: '#fff',
-                          padding: '8px 14px',
-                          borderRadius: 8,
-                          fontSize: 13,
-                          fontWeight: 500,
-                          whiteSpace: 'nowrap',
-                          transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={e =>
-                          (e.currentTarget.style.background = '#9a0c0c')
-                        }
-                        onMouseLeave={e =>
-                          (e.currentTarget.style.background = '#b50e0e')
-                        }
-                      >
-                        Download
-                      </a>
-                    </div>
+                    {f.name}
                   </div>
-                ))}
-              </div>
-            </>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: '#777',
+                      marginTop: 4,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {f.size >= 1024 * 1024
+                      ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                      : (f.size / 1024).toFixed(1) + ' KB'}
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 12,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!selected[f.path]}
+                      onChange={() => toggleSelect(f.path)}
+                    />
+                    <a
+                      href={encodeURI(f.path)}
+                      download
+                      style={{
+                        display: 'inline-block',
+                        background: '#b50e0e',
+                        color: '#fff',
+                        textDecoration: 'none',
+                        padding: '10px 20px',
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        transition: 'background 0.2s, transform 0.1s',
+                      }}
+                      onMouseEnter={e =>
+                        (e.currentTarget.style.background = '#9a0c0c')
+                      }
+                      onMouseLeave={e =>
+                        (e.currentTarget.style.background = '#b50e0e')
+                      }
+                      onMouseDown={e =>
+                        (e.currentTarget.style.transform = 'scale(0.97)')
+                      }
+                      onMouseUp={e =>
+                        (e.currentTarget.style.transform = 'scale(1)')
+                      }
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </section>
