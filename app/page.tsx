@@ -316,11 +316,30 @@ export default function Page() {
                       color: theme === 'light' ? '#777' : '#ccc',
                       marginTop: 4,
                       marginBottom: 16,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 4,
                     }}
                   >
-                    {f.size >= 1024 * 1024
-                      ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
-                      : (f.size / 1024).toFixed(1) + ' KB'}
+                    {/* File size */}
+                    <span>
+                      {f.size >= 1024 * 1024
+                        ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                        : (f.size / 1024).toFixed(1) + ' KB'}
+                    </span>
+                  
+                    {/* Last modified */}
+                    {f.lastModified && (
+                      <span style={{ color: theme === 'light' ? '#999' : '#aaa', fontSize: 12 }}>
+                        Updated{' '}
+                        {new Date(f.lastModified).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    )}
                   </div>
                   <div
                     style={{
