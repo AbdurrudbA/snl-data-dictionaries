@@ -15,5 +15,12 @@
     "react-dom": "18.2.0",
     "jszip": "3.10.1",
     "file-saver": "2.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/react": "^18.2.16",
+    "@types/node": "^20.4.2"
   }
+
 }
+
