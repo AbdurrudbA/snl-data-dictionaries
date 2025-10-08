@@ -226,11 +226,28 @@ export default function Page() {
                         color: '#777',
                         marginTop: 4,
                         marginBottom: 16,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 3,
                       }}
                     >
-                      {f.size >= 1024 * 1024
-                        ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
-                        : (f.size / 1024).toFixed(1) + ' KB'}
+                      <span>
+                        {f.size >= 1024 * 1024
+                          ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                          : (f.size / 1024).toFixed(1) + ' KB'}
+                      </span>
+                    
+                      {f.lastModified && (
+                        <span style={{ color: '#999', fontSize: 12 }}>
+                          Updated{' '}
+                          {new Date(f.lastModified).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      )}
                     </div>
                     <div
                       style={{
