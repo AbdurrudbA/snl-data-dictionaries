@@ -13,13 +13,11 @@ export default function Page() {
   const [busy, setBusy] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Load theme preference
   useEffect(() => {
     const stored = localStorage.getItem('theme');
     if (stored === 'dark') setTheme('dark');
   }, []);
 
-  // Save theme preference
   useEffect(() => {
     localStorage.setItem('theme', theme);
   }, [theme]);
@@ -85,8 +83,8 @@ export default function Page() {
         transition: 'background 1.5s ease',
         background:
           theme === 'light'
-            ? 'linear-gradient(180deg, #fceabb, #f8b500)'
-            : 'linear-gradient(180deg, #1e3c72, #2a5298)',
+            ? 'linear-gradient(180deg, #ffffff, #f7f7f7)'
+            : 'linear-gradient(180deg, #0d0d0d, #1a1a1a)',
         color: theme === 'light' ? '#111' : '#eee',
       }}
     >
@@ -94,10 +92,13 @@ export default function Page() {
       <aside
         style={{
           width: 260,
-          background: theme === 'light' ? '#fff' : '#1a1a1a',
-          borderRight: `1px solid ${theme === 'light' ? '#eee' : '#333'}`,
+          background: theme === 'light' ? '#fff' : '#121212',
+          borderRight: 'none',
           padding: '24px',
-          boxShadow: '2px 0 8px rgba(0,0,0,0.05)',
+          boxShadow:
+            theme === 'light'
+              ? '2px 0 8px rgba(0,0,0,0.05)'
+              : '2px 0 8px rgba(0,0,0,0.6)',
           overflowY: 'auto',
           transition: 'background 1s ease, color 1s ease',
         }}
@@ -112,8 +113,7 @@ export default function Page() {
               objectFit: 'contain',
               margin: '0 auto',
               display: 'block',
-              filter: theme === 'light' ? 'none' : 'invert(1)',
-              transition: 'filter 1s ease',
+              transition: 'opacity 1s ease',
             }}
           />
         </div>
@@ -143,8 +143,13 @@ export default function Page() {
                     ? '#b50e0e'
                     : theme === 'light'
                     ? 'transparent'
-                    : '#222',
-                color: activeCategory === cat ? '#fff' : theme === 'light' ? '#111' : '#ccc',
+                    : '#1f1f1f',
+                color:
+                  activeCategory === cat
+                    ? '#fff'
+                    : theme === 'light'
+                    ? '#111'
+                    : '#ccc',
                 transition: 'all 0.4s ease',
                 fontWeight: 500,
                 outline: 'none',
@@ -182,7 +187,10 @@ export default function Page() {
             fontSize: 28,
             transition: 'transform 0.5s ease, filter 1s ease',
             transform: theme === 'light' ? 'rotate(0deg)' : 'rotate(180deg)',
-            filter: theme === 'light' ? 'none' : 'drop-shadow(0 0 8px #f0e68c)',
+            filter:
+              theme === 'light'
+                ? 'none'
+                : 'drop-shadow(0 0 8px rgba(255,255,200,0.5))',
           }}
         >
           {theme === 'light' ? '🌞' : '🌙'}
@@ -203,19 +211,26 @@ export default function Page() {
 
         {activeCategory && (
           <>
-            {/* Category Header */}
             <div style={{ marginBottom: 24 }}>
               <h1 style={{ fontSize: 24, color: '#b50e0e', margin: 0 }}>
                 {activeCategory}
               </h1>
-              <p style={{ fontSize: 14, color: theme === 'light' ? '#666' : '#bbb', margin: '4px 0 12px' }}>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: theme === 'light' ? '#666' : '#bbb',
+                  margin: '4px 0 12px',
+                }}
+              >
                 {filteredFiles.length} files available · Last updated:{' '}
                 {new Date(manifest?.generatedAt || '').toLocaleDateString()}
               </p>
               <hr
                 style={{
                   border: 'none',
-                  borderBottom: `1px solid ${theme === 'light' ? '#eee' : '#444'}`,
+                  borderBottom: `1px solid ${
+                    theme === 'light' ? '#eee' : '#333'
+                  }`,
                 }}
               />
             </div>
@@ -243,104 +258,104 @@ export default function Page() {
               </div>
             )}
 
-            {/* File Cards */}
-            {filteredFiles.length === 0 ? (
-              <div style={{ color: '#888', fontSize: 15, textAlign: 'center' }}>
-                No files found in <strong>{activeCategory}</strong>.
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-                  gap: 28,
-                  paddingBottom: 100,
-                }}
-              >
-                {filteredFiles.map((f, idx) => (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+                gap: 28,
+                paddingBottom: 100,
+              }}
+            >
+              {filteredFiles.map((f, idx) => (
+                <div
+                  key={f.path}
+                  style={{
+                    background: theme === 'light' ? '#fff' : '#1c1c1c',
+                    borderRadius: 16,
+                    boxShadow:
+                      theme === 'light'
+                        ? '0 2px 10px rgba(0,0,0,0.08)'
+                        : '0 2px 10px rgba(0,0,0,0.6)',
+                    padding: '24px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    animation: `fadeIn 0.4s ease ${idx * 0.05}s both`,
+                    transition: 'transform 0.3s, background 1s, box-shadow 1s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow =
+                      '0 6px 18px rgba(0,0,0,0.12)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow =
+                      theme === 'light'
+                        ? '0 2px 10px rgba(0,0,0,0.08)'
+                        : '0 2px 10px rgba(0,0,0,0.6)';
+                  }}
+                >
+                  <span style={{ fontSize: 40, color: '#1d6f42' }}>📘</span>
                   <div
-                    key={f.path}
                     style={{
-                      background: theme === 'light' ? '#fff' : '#2a2a2a',
-                      borderRadius: 16,
-                      boxShadow:
-                        theme === 'light'
-                          ? '0 2px 10px rgba(0,0,0,0.08)'
-                          : '0 2px 10px rgba(255,255,255,0.05)',
-                      padding: '24px 20px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                      animation: `fadeIn 0.4s ease ${idx * 0.05}s both`,
-                      transition: 'transform 0.3s, background 1s, box-shadow 1s',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'translateY(-5px)';
-                      e.currentTarget.style.boxShadow =
-                        '0 6px 18px rgba(0,0,0,0.12)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow =
-                        theme === 'light'
-                          ? '0 2px 10px rgba(0,0,0,0.08)'
-                          : '0 2px 10px rgba(255,255,255,0.05)';
+                      marginTop: 10,
+                      fontWeight: 600,
+                      fontSize: 16,
+                      color: theme === 'light' ? '#222' : '#f4f4f4',
+                      wordBreak: 'break-word',
+                      maxWidth: '90%',
                     }}
                   >
-                    <span style={{ fontSize: 40, color: '#1d6f42' }}>📘</span>
-                    <div
-                      style={{
-                        marginTop: 10,
-                        fontWeight: 600,
-                        fontSize: 16,
-                        color: theme === 'light' ? '#222' : '#f4f4f4',
-                        wordBreak: 'break-word',
-                        maxWidth: '90%',
-                      }}
-                    >
-                      {f.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: theme === 'light' ? '#777' : '#ccc',
-                        marginTop: 4,
-                        marginBottom: 16,
-                      }}
-                    >
-                      {f.size >= 1024 * 1024
-                        ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
-                        : (f.size / 1024).toFixed(1) + ' KB'}
-                    </div>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
-                      <input
-                        type="checkbox"
-                        checked={!!selected[f.path]}
-                        onChange={() => toggleSelect(f.path)}
-                      />
-                      <a
-                        href={encodeURI(f.path)}
-                        download
-                        style={{
-                          display: 'inline-block',
-                          background: '#b50e0e',
-                          color: '#fff',
-                          textDecoration: 'none',
-                          padding: '10px 20px',
-                          borderRadius: 10,
-                          fontSize: 14,
-                          fontWeight: 500,
-                          transition: 'background 0.3s',
-                        }}
-                      >
-                        Download
-                      </a>
-                    </div>
+                    {f.name}
                   </div>
-                ))}
-              </div>
-            )}
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: theme === 'light' ? '#777' : '#ccc',
+                      marginTop: 4,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {f.size >= 1024 * 1024
+                      ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+                      : (f.size / 1024).toFixed(1) + ' KB'}
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 12,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!selected[f.path]}
+                      onChange={() => toggleSelect(f.path)}
+                    />
+                    <a
+                      href={encodeURI(f.path)}
+                      download
+                      style={{
+                        display: 'inline-block',
+                        background: '#b50e0e',
+                        color: '#fff',
+                        textDecoration: 'none',
+                        padding: '10px 20px',
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        transition: 'background 0.3s',
+                      }}
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         )}
 
